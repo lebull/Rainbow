@@ -5,7 +5,7 @@ class ScreenShapes(object):
     SINGLE = " "
     DOUBLE = "  "
 
-class ScreenColors(object):
+class Color(object):
     PX_DEFAULT = 0
     PX_BLACK = 1
     PX_RED = 8
@@ -58,7 +58,7 @@ class Screen(object):
         self.size = size
         self.data = [[0 for x in range(self.size[0])] for y in range(self.size[1])]
         self.outputString = ""
-        self.boarderColor = ScreenColors.BG_BLACK
+        self.boarderColor = Color.BG_BLACK
 
     def _pushOutputString(self, data):
         self.outputString += data
@@ -82,8 +82,8 @@ class Screen(object):
         self.clearColor()
 
         try:
-            for color in colors:
-                self.setColor(color)
+            for myColor in colors:
+                self.setColor(myColor)
         except:
             self.setColor(colors)
 

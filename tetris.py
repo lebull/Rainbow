@@ -1,9 +1,13 @@
+# This
+
 #Tetris Psudo
 import sys
 import time
 import random
 
-from screen import Screen, ScreenColors
+from screen import Screen, Color
+
+from memory import MemorySpace
 
 #The screen, colors and all, should be represented by 800 (128 + 64 + 8) bits
 #0b11001000 (0xC8)
@@ -78,9 +82,9 @@ def blitBlock(shape, orientation, pos, unblit):
         targetPos = (pos[0] + i/4, pos[1] + i%4)
         if(shapeData[i] == "X"):
             if(unblit):
-                color = ScreenColors.BG_DEFAULT
+                color = Color.BG_DEFAULT
             else:
-                color = ScreenColors.BG_RED
+                color = Color.BG_RED
             #should be handled by its own opcode
             setScreenPixel((targetPos[1], targetPos[0]), color)
         i+=1

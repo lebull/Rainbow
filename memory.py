@@ -1,4 +1,4 @@
-from screen import Screen, ScreenColors
+from screen import Screen, Color
 
 from bitarray import bitarray
 
@@ -63,7 +63,7 @@ class VisualMemory(MemorySpace):
     def draw(self):
         for t in range(100):
             pos = (random.randint(0, self.screen.size[0]-1), random.randint(0, self.screen.size[1]-1))
-            self.screen.data[pos[1]][pos[0]] = ScreenColors.random()
+            self.screen.data[pos[1]][pos[0]] = Color.random()
         self.screen.printout()
 
 if __name__ == "__main__":
