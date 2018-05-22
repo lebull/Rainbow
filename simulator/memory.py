@@ -9,25 +9,21 @@ def _dataToBits(data):
     return bitarray(dataString)
 
 class _Allocation(object):
-    def __init__(self, name, size, startAddress, parentSpace):
-        self.name = name
-        self.size = size
+    def __init__(self, words, startAddress, parentSpace):
+        self.words = words
         self.startAddress = startAddress
         self.parentSpace = parentSpace
 
-
-    def writeData(self, data):
-        pass
-
     def getEndAddress(self):
-        return self.startAddress + self.size
+        return self.startAddress + self.wordSize
 
 class MemorySpace(object):
     def __init__(self, totalBits, wordSize):
         self.data = bitarray(totalBits*wordSize)#[0 for i in range(totalBits)]
         self.totalBits = totalBits
         self.wordSize = wordSize
-        self.allocations = []
+        self.allocations = {}
+        self._nextUnalicatedAddress = 0
 
     def __len__(self):
         return len(self.data)/self.wordSize
@@ -54,7 +50,11 @@ class MemorySpace(object):
         return self.totalBits/sel.wordSize
 
     def allocate(self, label, words):
-       self.allocations[label]
+        if label in self.allocations:
+            raise KeyError("Duplicate label found")
+        self.allocations[label] = _Allocation(words, self._nextUnalicatedAddress, self)
+        self._nextUnalicatedAddress += words
+
 
     def readAllocated(self, label, words):
        pass
@@ -94,26 +94,34 @@ if __name__ == "__main__":
             allocationSize = 0xFF
             startAddress = 0x00
 
-            allocation = _Allocation(name, allocationSize, startAddress, self.memorySpace)
-            self.assertEqual(allocation.name, name)
-            self.assertEqual(allocation.size, allocationSize)
+            allocation = _Allocation(allocationSize, startAddress, self.memorySpace)
+            self.assertEqual(allocation.words, allocationSize)
             self.assertEqual(allocation.parentSpace, self.memorySpace)
             self.assertEqual(allocation.startAddress, startAddress)
 
     class TestMemorySpace(unittest.TestCase):
-        def testCreate(self):
-            wordSize = 16
-            space = MemorySpace(0xFFFF, wordSize)
-            self.assertEqual(len(space)/wordSize, 0xFFF)
+
+        def setUp(self):
+            self.wordSize = 16
+            self.memorySpace = MemorySpace(0xFFFF, self.wordSize)
+
+        def testSizeIsAccurate(self):
+            self.assertEqual(len(self.memorySpace)/self.wordSize, 0xFFF)
 
 
         def testReadWriteWord(self):
-            space = MemorySpace(0xFFFF, 16)
             data = 0x1A2B
             address = 0xF000
-            space.writeWord(address, data)
-            readData = space.readWord(address)
+            self.memorySpace.writeWord(address, data)
+            readData = self.memorySpace.readWord(address)
             self.assertEqual(data, readData)
+
+        def testNewAllocation(self):
+
+            self.assertEqual(self.memorySpace._nextUnalicatedAddress, 0)
+            self.memorySpace.allocate("TestSpace1", 4)
+            self.assertEqual(self.memorySpace._nextUnalicatedAddress, 4)
+
 
         # def testReadWriteAllocation(self):
         #     space = MemorySpace(0xFFFF, 16)
