@@ -82,8 +82,8 @@ class Screen(object):
         self.clearColor()
 
         try:
-            for myColor in colors:
-                self.setColor(myColor)
+            for color in colors:
+                self.setColor(color)
         except:
             self.setColor(colors)
 

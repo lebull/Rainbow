@@ -1,17 +1,33 @@
 from screen import Screen, Color
-
 from bitarray import bitarray
-
 import math, random
 
 
+def _dataToBits(data):
+    newData = bitarray()
+    dataString = bin(int(data))[2:]
+    return bitarray(dataString)
+
+class _Allocation(object):
+    def __init__(self, name, size, startAddress, parentSpace):
+        self.name = name
+        self.size = size
+        self.startAddress = startAddress
+        self.parentSpace = parentSpace
+
+
+    def writeData(self, data):
+        pass
+
+    def getEndAddress(self):
+        return self.startAddress + self.size
 
 class MemorySpace(object):
     def __init__(self, totalBits, wordSize):
         self.data = bitarray(totalBits*wordSize)#[0 for i in range(totalBits)]
         self.totalBits = totalBits
         self.wordSize = wordSize
-        self.allocations = {}
+        self.allocations = []
 
     def __len__(self):
         return len(self.data)/self.wordSize
@@ -29,13 +45,10 @@ class MemorySpace(object):
 
     def writeWord(self, address, data):
         bitNum = self.getBitIndexesFromAddress(address)
-
-        newData = bitarray(self.wordSize)
-        dataString = bin(int(data))[2:]
-        newData[-len(dataString):] = bitarray(dataString)
-        #newData.frombytes(data)
-        print newData
-        self.data[bitNum[0]: bitNum[1]] = newData
+        newWord = bitarray(self.wordSize)
+        newData = _dataToBits(data)
+        newWord[-len(newData):] = newData
+        self.data[bitNum[0]: bitNum[1]] = newWord
 
     def getMaxAddress(self):
         return self.totalBits/sel.wordSize
@@ -69,6 +82,24 @@ class VisualMemory(MemorySpace):
 if __name__ == "__main__":
     import unittest
 
+    class TestAllocation(unittest.TestCase):
+        def setUp(self):
+            self.wordSize = 0x10
+            self.spaceSize = 0xFFFF
+            self.memorySpace = MemorySpace(self.spaceSize, self.wordSize)
+
+
+        def testCreate(self):
+            name = "TestAlloc"
+            allocationSize = 0xFF
+            startAddress = 0x00
+
+            allocation = _Allocation(name, allocationSize, startAddress, self.memorySpace)
+            self.assertEqual(allocation.name, name)
+            self.assertEqual(allocation.size, allocationSize)
+            self.assertEqual(allocation.parentSpace, self.memorySpace)
+            self.assertEqual(allocation.startAddress, startAddress)
+
     class TestMemorySpace(unittest.TestCase):
         def testCreate(self):
             wordSize = 16
@@ -84,14 +115,14 @@ if __name__ == "__main__":
             readData = space.readWord(address)
             self.assertEqual(data, readData)
 
-        def testReadWriteAllocation(self):
-            space = MemorySpace(0xFFFF, 16)
-            space.allocate("alloc", 0xC8)
-            self.assertEqual(space.readAllocated, readData)
+        # def testReadWriteAllocation(self):
+        #     space = MemorySpace(0xFFFF, 16)
+        #     space.allocate("alloc", 0xC8)
+        #     self.assertEqual(space.readAllocated, readData)
 
 
         #TODO:
-        # Test writing a value that is too large
+        # Test writing data that is too large
         # Test writing to an address that is out of range
 
         #If you try to allocate a space with an existing name, raise an error
@@ -102,6 +133,6 @@ if __name__ == "__main__":
 
 
     #
-    v = VisualMemory(4, 4096, 16).draw()
+    #v = VisualMemory(4, 4096, 16).draw()
 
-    #unittest.main()
+    unittest.main()
