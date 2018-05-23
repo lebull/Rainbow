@@ -9,38 +9,49 @@ from screen import Screen, Color
 
 from memory import MemorySpace
 
+
 #The screen, colors and all, should be represented by 800 (128 + 64 + 8) bits
 #0b11001000 (0xC8)
 screen = Screen((10, 20))
 
 memory = MemorySpace(4096, 16)
 
+#------------------------------------------
+#    Begin Psudocode
+#------------------------------------------
+
 #Block Type Definitions
 
 SQUARE = 0             #def
 NUM_SQUARE = 1         #def
+SQUARE_COLOR = 0
 SQUARE_SHAPES = [
     "     XX  XX     "
 ]
 
 ELL = 1                 #def
 NUM_ELL = 2             #def
+ELL_COLOR = 1           #def
 
 BELL = 2                #def
 NUM_BELL = 2            #def
+BELL_COLOR = 2          #def
 
-ZIG = 3
-NUM_ZAG = 2
+ZIG = 3                 #def
+NUM_ZAG = 2             #def
+ZIG_COLOR = 3           #def
 
-ZAG = 4
-NUM_ZAG = 2
+ZAG = 4                 #def
+NUM_ZAG = 2             #def
+ZAG_COLOR = 4           #def
 
-TEE = 5
-NUM_TEE = 4
-
+TEE = 5                 #def
+NUM_TEE = 4             #def
+TEE_COLOR = 5           #def
 
 LINE = 6                #def
 NUM_LINE = 4            #def
+LINE_COLOR = 6          #def
 LINE_SHAPES = [
 #   |.   .   .   .   |
     "    XXXX        ",
@@ -101,6 +112,7 @@ def rotate(direction):
 #Return a 4x4 grid of occupied spots on the board, encoded
 # as 16 bits.  OOBs will be considered "occupied".
 def getQuartFromBoard(pos):
+
     pass
 
 #Returns true if any two corrisponding spots of two quarts are both occupied.
